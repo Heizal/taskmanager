@@ -26,6 +26,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
 
+    //Many users can have the same role
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

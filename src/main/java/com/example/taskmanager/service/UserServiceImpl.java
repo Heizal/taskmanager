@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -59,5 +60,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsByUsername(String username){
         return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public User updateUser(String username, UserRegistrationDto updatedDto) {
+        User user = findByUsername(username);
+        user.setUsername(updatedDto.getUsername());
+        user.setEmail(updatedDto.getEmail());
+        // Handle password update if needed, ensure to encode it
+        userRepository.save(user);
+        return user;
+    }
+
+    @Override
+    public void deleteUser(String username){
+        User user = findByUsername(username);
+        userRepository.delete(user);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
