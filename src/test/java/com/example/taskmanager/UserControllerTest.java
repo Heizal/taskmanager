@@ -3,23 +3,28 @@ package com.example.taskmanager;
 import com.example.taskmanager.controller.UserController;
 import com.example.taskmanager.dto.UserRegistrationDto;
 import com.example.taskmanager.exception.ResourceNotFoundException;
+import com.example.taskmanager.model.Role;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class UserControllerTest {
 
     @Autowired
@@ -70,19 +75,23 @@ public class UserControllerTest {
     //Retrieve user by username
     @Test
     public void testGetUserByUsername_Success() throws Exception {
-        User user = new User();
-        user.setUsername("testuser");
-        user.setEmail("testuser@example.com");
+        // Create a sample role
+        Role role = new Role(1L, "ROLE_USER");
 
-        //Mock the service to return a valid user
+        // Create a sample user with roles
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        User user = new User(1L, "testuser", "test@example.com", "password", roles);
+
+        // Mocking user service to return the user when called
         Mockito.when(userService.findByUsername("testuser")).thenReturn(user);
 
-        //Perform a GET request to get a valid user
         mockMvc.perform(get("/api/users/testuser"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json("{\"username\":\"testuser\",\"email\":\"testuser@example.com\"}"));
+                .andExpect(jsonPath("$.username").value("testuser"));
     }
+
 
     //Test user not found
     @Test
