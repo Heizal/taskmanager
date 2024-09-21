@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -28,17 +30,26 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto registrationDto) {
-        Role userRole = roleRepository.findByName("ROLE_USER");
         if (userRepository.existsByUsername(registrationDto.getUsername())) {
             return new ResponseEntity<>("Username is already taken!", HttpStatus.BAD_REQUEST);
         }
 
-        // Encrypt password before saving
+        Role userRole = roleRepository.findByName("ROLE_USER");
+        if (userRole == null) {
+            return new ResponseEntity<>("Default role not found!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // Encrypt password and create the user
         User user = new User();
         user.setUsername(registrationDto.getUsername());
         user.setEmail(registrationDto.getEmail());
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-        user.getRoles().add(userRole); // Default role is USER
+
+        // Set default roles (initialize role set if null)
+        if (user.getRoles() == null) {
+            user.setRoles(new HashSet<>());
+        }
+        user.getRoles().add(userRole);
 
         userRepository.save(user);
         return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
@@ -46,8 +57,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody LoginDto loginDto) {
-        // Spring handles login via formLogin() in SecurityConfig,
-        // so this can be left empty or customized with JWT if necessary
+        // Normally handled by Spring Security
         return ResponseEntity.ok("Logged in successfully!");
     }
 
