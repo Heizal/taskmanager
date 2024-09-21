@@ -17,7 +17,7 @@ public class TaskService {
         return taskRepository.save(task);
     }
     public Task getTask(Long id) {
-        return taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+        return taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task not found with id " + id));
     }
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
