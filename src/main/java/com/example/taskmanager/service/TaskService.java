@@ -55,4 +55,15 @@ public class TaskService {
         //Save task
         return taskRepository.save(task);
     }
+
+    public Task assignTaskToUser(Long taskId, String username) {
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new ResourceNotFoundException("Task not found with id: " + taskId));
+
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with username: " + username));
+
+        task.setAssignedTo(user);
+        return taskRepository.save(task);
+    }
 }

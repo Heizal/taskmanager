@@ -49,6 +49,12 @@ public class TaskController {
         return ResponseEntity.ok(sharedTask);
     }
 
+    @PostMapping("/{taskId}/assign")
+    public ResponseEntity<Task> assignTask(@PathVariable Long taskId, @RequestParam String username) {
+        Task assignedTask = taskService.assignTaskToUser(taskId, username);
+        return ResponseEntity.ok(assignedTask);
+    }
+
 
 
 
