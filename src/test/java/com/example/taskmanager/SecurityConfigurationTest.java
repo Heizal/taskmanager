@@ -30,7 +30,7 @@ class SecurityConfigTest {
                 .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/auth/register")
-                        .with(csrf())  // Add CSRF token for POST request
+                        // Add CSRF token for POST request
                         .contentType("application/json")
                         .content("{ \"username\": \"user1\", \"email\": \"user1@example.com\", \"password\": \"password\" }"))
                 .andExpect(status().isOk());

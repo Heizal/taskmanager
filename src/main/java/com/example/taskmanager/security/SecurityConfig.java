@@ -23,19 +23,14 @@ public class SecurityConfig {
                 .userDetailsService(customUserDetailsService)
                 .csrf(csrf -> csrf.disable()) // Disable CSRF (you may want to enable it in production)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/**").permitAll() // Publicly accessible endpoints
                         .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyRole("USER", "ADMIN") // Authenticated users can access GET /tasks
                         .requestMatchers(HttpMethod.POST, "/api/tasks/**").hasRole("ADMIN") // Only admins can create tasks
-                        .anyRequest().authenticated()) // All other endpoints require authentication
-                .formLogin(form -> form.permitAll())
-                .logout(logout -> logout.permitAll());
-
-
+                        .anyRequest().authenticated()); // All other endpoints require authentication
         return http.build(); // Return the security filter chain
     }
 
