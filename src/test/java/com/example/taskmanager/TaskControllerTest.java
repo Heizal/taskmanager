@@ -2,6 +2,7 @@ package com.example.taskmanager;
 
 
 import com.example.taskmanager.controller.TaskController;
+import com.example.taskmanager.exception.ResourceNotFoundException;
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.service.TaskService;
 import org.junit.jupiter.api.Test;
@@ -88,6 +89,59 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$.title").value("Test Task"));
     }
 
-    //Test: Share task with nonexistent user
+    //Test: Task assignment
+    @Test
+    public void testAssignTaskToUser_Success() throws Exception {
+        Long taskId = 1L;
+        String username = "user1";
+        Task task = new Task();
+        task.setId(taskId);
+        task.setTitle("Sample Task");
+        task.setDescription("Sample Task Description");
+
+        //Return assigned task
+        Mockito.when(taskService.assignTaskToUser(taskId, username)).thenReturn(task);
+        mockMvc.perform(post("/api/tasks/" + taskId + "/assign")
+                        .param("username", username)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(taskId))
+                .andExpect(jsonPath("$.title").value("Sample Task"));
+
+    }
+
+    //Test: Task assigned to nonexistent user
+    @Test
+    public void testAssignTaskToNonExistentUser() throws Exception {
+        Long taskId = 1L;
+        String nonExistentUsername = "nonexistentuser";
+
+        // Mocking TaskService to throw exception when user doesn't exist
+        Mockito.when(taskService.assignTaskToUser(taskId, nonExistentUsername))
+                .thenThrow(new ResourceNotFoundException("User not found with username: " + nonExistentUsername));
+
+        mockMvc.perform(post("/api/tasks/" + taskId + "/assign")
+                        .param("username", nonExistentUsername)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    //Test: Verify that error message works
+    @Test
+    public void testAssignNonExistentTask() throws Exception {
+        Long nonExistentTaskId = 99L;
+        String username = "user1";
+
+        // Mocking TaskService to throw exception when task doesn't exist
+        Mockito.when(taskService.assignTaskToUser(nonExistentTaskId, username))
+                .thenThrow(new ResourceNotFoundException("Task not found with id: " + nonExistentTaskId));
+
+        mockMvc.perform(post("/api/tasks/" + nonExistentTaskId + "/assign")
+                        .param("username", username)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+
 
 }
