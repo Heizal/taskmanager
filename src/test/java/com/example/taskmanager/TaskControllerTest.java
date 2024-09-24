@@ -11,9 +11,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,8 +34,8 @@ public class TaskControllerTest {
     //Test: get all tasks
     @Test
     public void testGetAllTasks() throws Exception {
-        Task task1 = new Task(1L, "Task 1", "Description 1", null,"TODO", null, null);
-        Task task2 = new Task(1L, "Task 2", "Description 2", null,"IN PROGRESS", null, null);
+        Task task1 = new Task(1L, "Task 1", "Description 1", null, "OPEN", null, null, new HashSet<>());
+        Task task2 = new Task(2L, "Task 2", "Description 2", null, "OPEN", null, null, new HashSet<>());
 
 
         Mockito.when(taskService.getAllTasks()).thenReturn(Arrays.asList(task1, task2));
@@ -68,5 +70,24 @@ public class TaskControllerTest {
 
 
     }
+
+    //Test: Task sharing with existent user
+    @Test
+    @WithMockUser(username = "user1", roles = "USER")
+    public void testShareTask() throws Exception {
+        Task task = new Task();
+        task.setId(1L);
+        task.setTitle("Test Task");
+
+        Mockito.when(taskService.sharedTaskWithUser(1L, "user2")).thenReturn(task);
+
+        mockMvc.perform(post("/api/tasks/1/share")
+                .param("username", "user2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.title").value("Test Task"));
+    }
+
+    //Test: Share task with nonexistent user
 
 }
