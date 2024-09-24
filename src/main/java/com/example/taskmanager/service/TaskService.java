@@ -2,8 +2,11 @@ package com.example.taskmanager.service;
 
 import com.example.taskmanager.exception.ResourceNotFoundException;
 import com.example.taskmanager.model.Task;
+import com.example.taskmanager.model.User;
 import com.example.taskmanager.repository.TaskRepository;
+import com.example.taskmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +14,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
-    private final TaskRepository taskRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     public Task createTask(Task task) {
         return taskRepository.save(task);
@@ -34,5 +41,18 @@ public class TaskService {
     public void deleteTask(Long id) {
         Task task = getTask(id);
         taskRepository.delete(task);
+    }
+
+    public Task sharedTaskWithUser(Long taskId, String username) {
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new ResourceNotFoundException("Task not found with id"));
+
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new ResourceNotFoundException("User not found"));
+
+        //Add user to set of sharedUsers
+        task.getSharedUsers().add(user);
+        //Save task
+        return taskRepository.save(task);
     }
 }

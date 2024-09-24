@@ -3,6 +3,7 @@ package com.example.taskmanager.controller;
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +13,8 @@ import java.util.List;
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
 public class TaskController {
-    private final TaskService taskService;
+    @Autowired
+    private TaskService taskService;
 
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
@@ -38,6 +40,13 @@ public class TaskController {
     public ResponseEntity<?> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{taskId}/share")
+    public ResponseEntity<Task> shareTask(@PathVariable Long taskId, @RequestParam String username) {
+        Task sharedTask = taskService.sharedTaskWithUser(taskId, username);
+
+        return ResponseEntity.ok(sharedTask);
     }
 
 

@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,8 +80,8 @@ class TaskServiceTest {
     @Test
     void getAllTasks_ShouldReturnAllTasks() {
         List<Task> tasks = Arrays.asList(
-                new Task(1L, "Task 1", "Description 1", null, "TODO", null, null),
-                new Task(2L, "Task 2", "Description 2", null, "IN_PROGRESS", null, null)
+                new Task(1L, "Task 1", "Description 1", null, "TODO", null, null, new HashSet<>()),
+                new Task(2L, "Task 2", "Description 2", null, "OPEN", null, null, new HashSet<>())
         );
 
         when(taskRepository.findAll()).thenReturn(tasks);
@@ -96,8 +97,8 @@ class TaskServiceTest {
     void updateTask_ShouldReturnUpdatedTask() {
         Long taskId = 1L;
         LocalDateTime now = LocalDateTime.now();
-        Task existingTask = new Task(taskId, "Old Title", "Old Description", now, "TODO", null, null);
-        Task updatedDetails = new Task(taskId, "New Title", "New Description", now.plusDays(1), "IN_PROGRESS", null, null);
+        Task existingTask = new Task(taskId, "Old Title", "Old Description", null, "TODO", null, null, new HashSet<>());
+        Task updatedDetails = new Task(taskId, "New Title", "New Description", null, "IN_PROGRESS", null, null, new HashSet<>());
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingTask));
         when(taskRepository.save(any(Task.class))).thenReturn(updatedDetails);
@@ -115,7 +116,7 @@ class TaskServiceTest {
     @Test
     void deleteTask_ShouldDeleteTask() {
         Long taskId = 1L;
-        Task task = new Task(taskId, "Test Task", "Description", null, "TODO", null, null);
+        Task task = new Task(taskId, "Test Task", "Test Description", null, "TODO", null, null, new HashSet<>());
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
         doNothing().when(taskRepository).delete(task);
