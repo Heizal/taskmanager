@@ -35,8 +35,8 @@ public class TaskControllerTest {
     //Test: get all tasks
     @Test
     public void testGetAllTasks() throws Exception {
-        Task task1 = new Task(1L, "Task 1", "Description 1", null, "OPEN", null, null, new HashSet<>());
-        Task task2 = new Task(2L, "Task 2", "Description 2", null, "OPEN", null, null, new HashSet<>());
+        Task task1 = new Task(1L, "Task 1", "Description 1", null, "OPEN", null, null, new HashSet<>(),new HashSet<>() );
+        Task task2 = new Task(2L, "Task 2", "Description 2", null, "OPEN", null, null, new HashSet<>(), new HashSet<>());
 
 
         Mockito.when(taskService.getAllTasks()).thenReturn(Arrays.asList(task1, task2));
