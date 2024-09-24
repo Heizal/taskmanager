@@ -16,16 +16,15 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String content;
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "task_id")
+    @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne

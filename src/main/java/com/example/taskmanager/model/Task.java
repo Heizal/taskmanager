@@ -37,6 +37,9 @@ public class Task {
     )
     private Set<User> sharedUsers = new HashSet<>();
 
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> comments = new HashSet<>();
+
     //Getters and setters
     public Long getId() {
         return id;
