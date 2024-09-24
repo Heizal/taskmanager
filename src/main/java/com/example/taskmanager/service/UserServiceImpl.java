@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
 
         //Assign a default role
-        Role userRole = roleRepository.findByName("Role_USER");
+        Role userRole = roleRepository.findByName("USER");
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
         user.setRoles(roles);
