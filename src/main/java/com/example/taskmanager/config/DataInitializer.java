@@ -12,11 +12,11 @@ public class DataInitializer {
     CommandLineRunner initRoles(RoleService roleService) {
         return args -> {
             // Initialize default roles if they don't exist
-            if (roleService.getRoleByName("ROLE_USER") == null) {
-                roleService.createRole("ROLE_USER");
+            if (roleService.getRoleByName("USER") == null) {
+                roleService.createRole("USER");
             }
-            if (roleService.getRoleByName("ROLE_ADMIN") == null) {
-                roleService.createRole("ROLE_ADMIN");
+            if (roleService.getRoleByName("ADMIN") == null) {
+                roleService.createRole("ADMIN");
             }
         };
     }
