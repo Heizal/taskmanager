@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,11 +44,11 @@ public class CommentControllerTest {
         comment.setContent(content);
 
         //Return created comment
-        Mockito.when(commentService.createComment(taskId, username, content)).thenReturn(comment);
+        Mockito.when(commentService.createComment(taskId, username, content, null)).thenReturn(comment);
 
         mockMvc.perform(post("/api/tasks/" + taskId + "/comments")
                         .param("username", username)
-                        .content(content)
+                        .param("content",content)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value(content));
@@ -71,6 +72,31 @@ public class CommentControllerTest {
                 .andExpect(jsonPath("$[0].content").value("This is a comment"));
     }
 
+    //Test: Create threaded comment
+    @Test
+    public void testCreateComment_Threading() throws Exception {
+        Long taskId = 1L;
+        String username = "user1";
+        String content = "This is a reply";
+        Long parentCommentId = 1L;
+
+        Comment comment = new Comment();
+        comment.setId(2L);
+        comment.setContent(content);
+        comment.setCreatedAt(LocalDateTime.now());
+
+        // Mocking the service to return the created threaded comment
+        Mockito.when(commentService.createComment(taskId, username, content, parentCommentId)).thenReturn(comment);
+
+        mockMvc.perform(post("/api/tasks/" + taskId + "/comments")
+                        .param("username", username)
+                        .param("content", content) // Add content as a request parameter
+                        .param("parentCommentId", String.valueOf(parentCommentId)) // Include parent comment ID
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value(content));
+    }
+
     //Test: create comment for nonexistent task
     @Test
     public void testCreateComment_NonExistentTask() throws Exception {
@@ -79,12 +105,12 @@ public class CommentControllerTest {
         String content = "This is a comment";
 
         // Mocking CommentService to throw exception when task doesn't exist
-        Mockito.when(commentService.createComment(nonExistentTaskId, username, content))
+        Mockito.when(commentService.createComment(nonExistentTaskId, username, content, null))
                 .thenThrow(new ResourceNotFoundException("Task not found with id: " + nonExistentTaskId));
 
         mockMvc.perform(post("/api/tasks/" + nonExistentTaskId + "/comments")
                         .param("username", username)
-                        .content(content)
+                        .param("content",content)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
