@@ -16,8 +16,8 @@ public class CommentController {
 
     //Post a new comment
     @PostMapping("/{taskId}/comments")
-    public ResponseEntity<Comment> createComment(@PathVariable Long taskId, @RequestParam String username, @RequestBody String content) {
-        Comment newComment = commentService.createComment(taskId, username, content);
+    public ResponseEntity<Comment> createComment(@PathVariable Long taskId, @RequestParam String username, @RequestParam String content, @RequestParam(required = false) Long parentCommentId) {
+        Comment newComment = commentService.createComment(taskId, username, content, parentCommentId);
         return ResponseEntity.ok(newComment);
     }
 

@@ -7,7 +7,6 @@ import com.example.taskmanager.model.Task;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.repository.CommentRepository;
 import com.example.taskmanager.repository.TaskRepository;
-import com.example.taskmanager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,27 +22,33 @@ public class CommentService {
     private TaskRepository taskRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
-    public Comment createComment(Long taskId, String username, String content) {
+    public Comment createComment(Long taskId, String username, String content, Long parentCommendId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
 
+        User user = userService.findByUsername(username);
         Comment comment = new Comment();
         comment.setTask(task);
         comment.setUser(user);
         comment.setContent(content);
         comment.setCreatedAt(LocalDateTime.now());
 
+        //Threading implementation
+        if (parentCommendId != null) {
+            Comment parentComment = commentRepository.findById(parentCommendId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Parent comment not found"));
+            comment.setParentComment(parentComment);
+        }
+
         return commentRepository.save(comment);
     }
 
+    //Fetch comments for a task
+
     public List<Comment> getCommentsByTaskId(Long taskId) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
-        return commentRepository.findByTask(task);
+        return commentRepository.findByTaskId(taskId);
     }
 
 }
