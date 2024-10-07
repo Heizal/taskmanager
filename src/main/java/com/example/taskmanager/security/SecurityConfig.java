@@ -30,12 +30,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll() // Publicly accessible endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/tasks/**").permitAll() // Authenticated users can access GET /tasks
-                        .requestMatchers(HttpMethod.POST, "/api/tasks/**").permitAll() // Only admins can create tasks
+                        .requestMatchers( "/api/tasks/**").permitAll()
+                        .requestMatchers("/api/users/**").permitAll()
                         .anyRequest().authenticated()); // All other endpoints require authentication
 
         return http.build(); // Return the security filter chain
