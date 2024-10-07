@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -34,7 +37,7 @@ public class AuthController {
             return new ResponseEntity<>("Username is already taken!", HttpStatus.BAD_REQUEST);
         }
 
-        Role userRole = roleRepository.findByName("ROLE_USER");
+        Role userRole = roleRepository.findByName("USER");
         if (userRole == null) {
             return new ResponseEntity<>("Default role not found!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -56,9 +59,18 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginDto loginDto) {
-        // Normally handled by Spring Security
-        return ResponseEntity.ok("Logged in successfully!");
+    public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
+        //Find user by username or email
+        Optional<User> user = userRepository.findByEmail(loginDto.getEmail());
+        if (user.isPresent()) {
+            // Return a JSON object instead of plain text
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Login successful");
+            return ResponseEntity.ok(response);  // Return JSON
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+
     }
 
 }
