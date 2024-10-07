@@ -55,6 +55,13 @@ public class TaskController {
         return ResponseEntity.ok(assignedTask);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<Task>> searchTasks(@RequestParam String query) {
+        List<Task> tasks = taskService.searchTasks(query);
+        return ResponseEntity.ok(tasks);
+
+    }
+
 
 
 

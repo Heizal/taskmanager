@@ -66,4 +66,9 @@ public class TaskService {
         task.setAssignedTo(user);
         return taskRepository.save(task);
     }
+
+    public List<Task> searchTasks(String query) {
+        return taskRepository.findByTitleContainingOrDescriptionContaining(query, query);
+    }
+
 }
