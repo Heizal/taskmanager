@@ -17,7 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -141,6 +144,16 @@ public class TaskControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
+
+    //Test: Search task
+    @Test
+    public void testSearchTasks() {
+        String query = "project";
+        List<Task> result = taskService.searchTasks(query);
+        assertNotNull(result);
+        assertTrue(result.stream().allMatch(task -> task.getTitle().contains(query) || task.getDescription().contains(query)));
+    }
+
 
 
 
