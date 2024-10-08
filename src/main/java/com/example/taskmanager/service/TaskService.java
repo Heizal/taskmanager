@@ -22,6 +22,9 @@ public class TaskService {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     public Task createTask(Task task) {
         return taskRepository.save(task);
     }
@@ -66,6 +69,8 @@ public class TaskService {
                 () -> new ResourceNotFoundException("User not found with username: " + username));
 
         task.setAssignedTo(user);
+        //Send email notification
+        emailService.sendEmail(user.getEmail(), "Task Assigned", "You have been assigned a task:" + task.getTitle());
         return taskRepository.save(task);
     }
 
@@ -74,7 +79,8 @@ public class TaskService {
     }
 
     public List<Task> filterTasks(String status, LocalDate dueDate, String assignedTo) {
-        return taskRepository.findAll(new TaskSpecification(status, dueDate, assignedTo));
+        TaskSpecification specification = new TaskSpecification(status, dueDate, assignedTo);
+        return taskRepository.findAll(specification);
     }
 
 }
