@@ -5,10 +5,12 @@ import com.example.taskmanager.model.Task;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.repository.TaskRepository;
 import com.example.taskmanager.repository.UserRepository;
+import com.example.taskmanager.repository.specification.TaskSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -69,6 +71,10 @@ public class TaskService {
 
     public List<Task> searchTasks(String query) {
         return taskRepository.findByTitleContainingOrDescriptionContaining(query, query);
+    }
+
+    public List<Task> filterTasks(String status, LocalDate dueDate, String assignedTo) {
+        return taskRepository.findAll(new TaskSpecification(status, dueDate, assignedTo));
     }
 
 }

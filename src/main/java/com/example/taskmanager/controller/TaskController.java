@@ -4,9 +4,11 @@ import com.example.taskmanager.model.Task;
 import com.example.taskmanager.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -60,6 +62,16 @@ public class TaskController {
         List<Task> tasks = taskService.searchTasks(query);
         return ResponseEntity.ok(tasks);
 
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Task>> filterTasks(
+            @RequestParam (required = false) String status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDate,
+            @RequestParam(required = false) String assignedTo
+    ) {
+        List<Task> filteredTasks = taskService.filterTasks(status, dueDate, assignedTo);
+        return ResponseEntity.ok(filteredTasks);
     }
 
 
