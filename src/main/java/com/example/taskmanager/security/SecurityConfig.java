@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers( "/api/tasks/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers("/test-email").permitAll()
                         .anyRequest().authenticated()); // All other endpoints require authentication
 
         return http.build(); // Return the security filter chain
