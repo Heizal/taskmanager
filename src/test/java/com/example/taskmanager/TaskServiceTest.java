@@ -19,6 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -125,5 +127,26 @@ class TaskServiceTest {
 
         verify(taskRepository).findById(taskId);
         verify(taskRepository).delete(task);
+    }
+
+    //Test: Search task
+    @Test
+    public void testSearchTasks() {
+        String query = "project";
+        List<Task> result = taskService.searchTasks(query);
+        assertNotNull(result);
+        assertTrue(result.stream().allMatch(task -> task.getTitle().contains(query) || task.getDescription().contains(query)));
+    }
+
+    //Test: Filter tasks
+    @Test
+    public void testFilterTasks() {
+        String status = "InProgress";
+        LocalDate dueDate = LocalDate.of(2024, 10, 10);
+        String assignedTo = "user1";
+
+        List<Task> result = taskService.filterTasks(status, dueDate, assignedTo);
+        assertNotNull(result);
+        assertTrue(result.stream().allMatch(task -> task.getStatus().equals(status) && task.getDueDate().equals(dueDate)));
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -143,15 +144,6 @@ public class TaskControllerTest {
                         .param("username", username)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
-    }
-
-    //Test: Search task
-    @Test
-    public void testSearchTasks() {
-        String query = "project";
-        List<Task> result = taskService.searchTasks(query);
-        assertNotNull(result);
-        assertTrue(result.stream().allMatch(task -> task.getTitle().contains(query) || task.getDescription().contains(query)));
     }
 
 
