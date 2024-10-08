@@ -33,7 +33,7 @@ public class TaskSpecification implements Specification<Task> {
             predicates.add(criteriaBuilder.equal(root.get("dueDate"), dueDate));
         }
         if (assignedTo != null) {
-            predicates.add(criteriaBuilder.equal(root.get("assignedUser").get("username"), assignedTo));
+            predicates.add(criteriaBuilder.equal(root.get("assignedTo").get("username"), assignedTo));
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
