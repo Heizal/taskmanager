@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,19 +26,29 @@ public class SecurityConfig {
         http
                 .cors()
                 .and()
-                .userDetailsService(customUserDetailsService)
                 .csrf(csrf -> csrf.disable()) // Disable CSRF (you may want to enable it in production)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
-                        .requestMatchers( "/api/tasks/**").permitAll()
+                        .requestMatchers("/api/tasks/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
-                        .requestMatchers("/test-email").permitAll()
-                        .anyRequest().authenticated()); // All other endpoints require authentication
-
+                        .requestMatchers("/oauth2/authorization/google").permitAll() // Allow OAuth2 login
+                        .anyRequest().authenticated()) // All other endpoints require authentication
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization/google") // Login page endpoint
+                        .defaultSuccessUrl("/tasks", true) // Redirect after successful login
+                        .failureUrl("/login?error=true") // Redirect on login failure
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                                .oidcUserService(oidcUserService()))) // Configure user info retrieval
+                .userDetailsService(customUserDetailsService); // Custom UserDetailsService
         return http.build(); // Return the security filter chain
+    }
+
+    @Bean
+    public OidcUserService oidcUserService() {
+        return new OidcUserService();
     }
 
     @Bean

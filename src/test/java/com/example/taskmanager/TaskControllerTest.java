@@ -5,6 +5,7 @@ import com.example.taskmanager.controller.TaskController;
 import com.example.taskmanager.exception.ResourceNotFoundException;
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.service.TaskService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -103,8 +106,19 @@ public class TaskControllerTest {
         task.setTitle("Sample Task");
         task.setDescription("Sample Task Description");
 
+        //Create mock OidcUser object
+        OidcUser mockOidcUser = Mockito.mock(OidcUser.class);
+        Mockito.when(mockOidcUser.getName()).thenReturn("mockUser");
+
+        // Create a mock Authentication object
+        Authentication mockAuth = Mockito.mock(Authentication.class);
+        Mockito.when(mockAuth.getName()).thenReturn(mockOidcUser.getName());
+
+        // Create a mock HttpServletRequest object
+        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+
         //Return assigned task
-        Mockito.when(taskService.assignTaskToUser(taskId, username)).thenReturn(task);
+        Mockito.when(taskService.assignTaskToUser(taskId, username, mockOidcUser, mockAuth,mockRequest)).thenReturn(task);
         mockMvc.perform(post("/api/tasks/" + taskId + "/assign")
                         .param("username", username)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -119,9 +133,19 @@ public class TaskControllerTest {
     public void testAssignTaskToNonExistentUser() throws Exception {
         Long taskId = 1L;
         String nonExistentUsername = "nonexistentuser";
+        //Create mock OidcUser object
+        OidcUser mockOidcUser = Mockito.mock(OidcUser.class);
+        Mockito.when(mockOidcUser.getName()).thenReturn("mockUser");
+
+        // Create a mock Authentication object
+        Authentication mockAuth = Mockito.mock(Authentication.class);
+        Mockito.when(mockAuth.getName()).thenReturn(mockOidcUser.getName());
+
+        // Create a mock HttpServletRequest object
+        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
 
         // Mocking TaskService to throw exception when user doesn't exist
-        Mockito.when(taskService.assignTaskToUser(taskId, nonExistentUsername))
+        Mockito.when(taskService.assignTaskToUser(taskId, nonExistentUsername, mockOidcUser, mockAuth,mockRequest))
                 .thenThrow(new ResourceNotFoundException("User not found with username: " + nonExistentUsername));
 
         mockMvc.perform(post("/api/tasks/" + taskId + "/assign")
@@ -135,9 +159,19 @@ public class TaskControllerTest {
     public void testAssignNonExistentTask() throws Exception {
         Long nonExistentTaskId = 99L;
         String username = "user1";
+        //Create mock OidcUser object
+        OidcUser mockOidcUser = Mockito.mock(OidcUser.class);
+        Mockito.when(mockOidcUser.getName()).thenReturn("mockUser");
+
+        // Create a mock Authentication object
+        Authentication mockAuth = Mockito.mock(Authentication.class);
+        Mockito.when(mockAuth.getName()).thenReturn(mockOidcUser.getName());
+
+        // Create a mock HttpServletRequest object
+        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
 
         // Mocking TaskService to throw exception when task doesn't exist
-        Mockito.when(taskService.assignTaskToUser(nonExistentTaskId, username))
+        Mockito.when(taskService.assignTaskToUser(nonExistentTaskId, username, mockOidcUser, mockAuth,mockRequest))
                 .thenThrow(new ResourceNotFoundException("Task not found with id: " + nonExistentTaskId));
 
         mockMvc.perform(post("/api/tasks/" + nonExistentTaskId + "/assign")

@@ -2,10 +2,14 @@ package com.example.taskmanager.controller;
 
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.service.TaskService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -52,8 +56,8 @@ public class TaskController {
     }
 
     @PostMapping("/{taskId}/assign")
-    public ResponseEntity<Task> assignTask(@PathVariable Long taskId, @RequestParam String username) {
-        Task assignedTask = taskService.assignTaskToUser(taskId, username);
+    public ResponseEntity<Task> assignTask(@PathVariable Long taskId, @RequestParam String username, @AuthenticationPrincipal OidcUser oidcUser, Authentication authentication, HttpServletRequest request) throws Exception {
+        Task assignedTask = taskService.assignTaskToUser(taskId, username, oidcUser, authentication, request);
         return ResponseEntity.ok(assignedTask);
     }
 

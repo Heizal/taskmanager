@@ -6,8 +6,13 @@ import com.example.taskmanager.model.User;
 import com.example.taskmanager.repository.TaskRepository;
 import com.example.taskmanager.repository.UserRepository;
 import com.example.taskmanager.repository.specification.TaskSpecification;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,6 +29,9 @@ public class TaskService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private OAuth2AuthorizedClientRepository authorizedClientRepository;
 
     public Task createTask(Task task) {
         return taskRepository.save(task);
@@ -61,7 +69,7 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public Task assignTaskToUser(Long taskId, String username) {
+    public Task assignTaskToUser(Long taskId, String username, OidcUser oidcUser, Authentication authentication, HttpServletRequest request) throws Exception {
         Task task = taskRepository.findById(taskId).orElseThrow(
                 () -> new ResourceNotFoundException("Task not found with id: " + taskId));
 
@@ -69,8 +77,20 @@ public class TaskService {
                 () -> new ResourceNotFoundException("User not found with username: " + username));
 
         task.setAssignedTo(user);
-        //Send email notification
-        emailService.sendEmail(user.getEmail(), "Task Assigned", "You have been assigned a task:" + task.getTitle());
+
+        // Fetch the OAuth2 access token for the logged-in user
+        OAuth2AuthorizedClient authorizedClient = authorizedClientRepository.loadAuthorizedClient(
+                "google", authentication, request);
+        String accessToken = authorizedClient.getAccessToken().getTokenValue();
+
+        // Send email notification using Gmail API
+        emailService.sendEmailWithGmailApi(
+                oidcUser.getEmail(), // 'from' email
+                user.getEmail(),      // 'to' email
+                "Task Assigned",
+                "You have been assigned a task: " + task.getTitle(),
+                accessToken           // OAuth2 access token
+        );
         return taskRepository.save(task);
     }
 
