@@ -6,6 +6,7 @@ import com.example.taskmanager.model.Role;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.repository.RoleRepository;
 import com.example.taskmanager.repository.UserRepository;
+import com.example.taskmanager.service.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,8 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto registrationDto) {
@@ -60,17 +63,25 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
-        //Find user by username or email
-        Optional<User> user = userRepository.findByEmail(loginDto.getEmail());
-        if (user.isPresent()) {
-            // Return a JSON object instead of plain text
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Login successful");
-            return ResponseEntity.ok(response);  // Return JSON
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-        }
+        // Find user by email
+        Optional<User> userOptional = userRepository.findByEmail(loginDto.getEmail());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
 
+            // Verify password
+            if (passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+                // Assuming we have a way to generate a JWT token, for example using a JwtProvider service
+                String accessToken = jwtProvider.generateToken(user.getUsername());
+
+                // Return a JSON object instead of plain text
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Login successful");
+                response.put("accessToken", accessToken);
+
+                return ResponseEntity.ok(response);  // Return JSON
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 
 }

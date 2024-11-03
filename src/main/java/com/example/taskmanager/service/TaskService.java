@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,8 @@ public class TaskService {
     private EmailService emailService;
 
     @Autowired
-    private OAuth2AuthorizedClientRepository authorizedClientRepository;
+    private OAuth2AuthorizedClientService authorizedClientService;
+
 
     public Task createTask(Task task) {
         return taskRepository.save(task);
@@ -78,9 +80,15 @@ public class TaskService {
 
         task.setAssignedTo(user);
 
+        Task savedTask = taskRepository.save(task);
+        System.out.println("Task assigned to user and saved: " + savedTask);
+
         // Fetch the OAuth2 access token for the logged-in user
-        OAuth2AuthorizedClient authorizedClient = authorizedClientRepository.loadAuthorizedClient(
-                "google", authentication, request);
+        OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
+                "google", oidcUser.getName());
+        if (authorizedClient == null) {
+            throw new IllegalStateException("No authorized client found for the user");
+        }
         String accessToken = authorizedClient.getAccessToken().getTokenValue();
 
         // Send email notification using Gmail API
@@ -91,8 +99,9 @@ public class TaskService {
                 "You have been assigned a task: " + task.getTitle(),
                 accessToken           // OAuth2 access token
         );
-        return taskRepository.save(task);
+        return savedTask;
     }
+
 
     public List<Task> searchTasks(String query) {
         return taskRepository.findByTitleContainingOrDescriptionContaining(query, query);

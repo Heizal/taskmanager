@@ -13,6 +13,9 @@ public class EmailController {
 
     @PostMapping("/send")
     public String sendEmail(@AuthenticationPrincipal OidcUser principal, @RequestBody EmailRequest emailRequest) throws Exception {
+        if (principal == null) {
+            throw new RuntimeException("User is not authenticated, principal is null.");
+        }
         //Get the logged-in users email and access token
         String userEmail = principal.getEmail();
         String accessToken = principal.getIdToken().getTokenValue();
@@ -55,6 +58,4 @@ public class EmailController {
             this.body = body;
         }
     }
-
-
 }

@@ -1,11 +1,11 @@
 package com.example.taskmanager.controller;
-
 import com.example.taskmanager.dto.UserRegistrationDto;
 import com.example.taskmanager.exception.ResourceNotFoundException;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +19,7 @@ public class UserController {
 
     // User registration endpoint
     @PostMapping("/register")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto registrationDto) {
         // Check if user already exists by email or username
         if (userService.existsByEmail(registrationDto.getEmail())) {
@@ -45,6 +46,7 @@ public class UserController {
 
     // Update User Information
     @PutMapping("/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateUser(@PathVariable String username, @RequestBody UserRegistrationDto updatedDto) {
         if (!userService.existsByUsername(username)) {
             return ResponseEntity.notFound().build();
@@ -55,6 +57,7 @@ public class UserController {
 
     // Delete User
     @DeleteMapping("/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteUser(@PathVariable String username) {
         if (!userService.existsByUsername(username)) {
             return ResponseEntity.notFound().build();

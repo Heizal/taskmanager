@@ -22,7 +22,7 @@ public class Task {
     private String status;
 
     @ManyToOne
-    @JoinColumn(name = "assigned_to_id")
+    @JoinColumn(name = "assigned_to")
     private User assignedTo;
 
     @ManyToOne

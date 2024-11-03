@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -21,6 +23,7 @@ import java.util.List;
 public class TaskController {
     @Autowired
     private TaskService taskService;
+
 
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
@@ -51,12 +54,20 @@ public class TaskController {
     @PostMapping("/{taskId}/share")
     public ResponseEntity<Task> shareTask(@PathVariable Long taskId, @RequestParam String username) {
         Task sharedTask = taskService.sharedTaskWithUser(taskId, username);
-
         return ResponseEntity.ok(sharedTask);
     }
 
     @PostMapping("/{taskId}/assign")
-    public ResponseEntity<Task> assignTask(@PathVariable Long taskId, @RequestParam String username, @AuthenticationPrincipal OidcUser oidcUser, Authentication authentication, HttpServletRequest request) throws Exception {
+    public ResponseEntity<?> assignTask(@PathVariable Long taskId, @RequestParam String username,
+                                        @AuthenticationPrincipal OidcUser oidcUser, Authentication authentication,
+                                        HttpServletRequest request) throws Exception {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication is missing");
+        }
+
+        if (oidcUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
+        }
         Task assignedTask = taskService.assignTaskToUser(taskId, username, oidcUser, authentication, request);
         return ResponseEntity.ok(assignedTask);
     }
@@ -77,9 +88,4 @@ public class TaskController {
         List<Task> filteredTasks = taskService.filterTasks(status, dueDate, assignedTo);
         return ResponseEntity.ok(filteredTasks);
     }
-
-
-
-
-
 }
