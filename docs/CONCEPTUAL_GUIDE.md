@@ -89,7 +89,7 @@ The system follows a **Service-Oriented Architecture (SOA)** with clear separati
 - Relationships ensure efficient CRUD operations and consistency.
 
 ### Diagram
-![System Overview](/SystemOverview.png)
+![System Overview](/System_Overview.png)
 - **User Interface**: Initiates HTTP requests using an API client like Postman.
 - **Controllers**: Handle user requests and map them to services.
 - **Services**: Execute business logic and interact with repositories.
