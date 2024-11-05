@@ -34,16 +34,44 @@ public class TaskService {
     @Autowired
     private OAuth2AuthorizedClientService authorizedClientService;
 
-
+    /**
+     * Create a new task and save it to the database.
+     * Validates the input to ensure no required fields are missing.
+     *
+     * @param task Data Transfer Object containing task details.
+     * @return The newly created task entity.
+     */
     public Task createTask(Task task) {
         return taskRepository.save(task);
     }
+
+    /**
+     * Retrieve a task from the repository.
+     *
+     * @return List of all tasks by id in the database.
+     * @throws ResourceNotFoundException if task is not found by id.
+     */
     public Task getTask(Long id) {
         return taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task not found with id " + id));
     }
+
+    /**
+     * Retrieve all tasks from the repository.
+     *
+     * @return List of all tasks in the database.
+     */
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }
+
+    /**
+     * Update an existing task in the system.
+     * Checks if the task exists, and applies the update if found.
+     *
+     * @param id The ID of the task to be updated.
+     * @param taskDetails Data Transfer Object with updated task details.
+     * @return The updated task entity.
+     */
     public Task updateTask(Long id, Task taskDetails) {
         Task task = getTask(id);
         task.setTitle(taskDetails.getTitle());
@@ -53,6 +81,11 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    /**
+     * Delete a task from the system.
+     *
+     * @param id The ID of the task to be deleted.
+     */
     public void deleteTask(Long id) {
         Task task = getTask(id);
         taskRepository.delete(task);

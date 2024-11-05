@@ -30,30 +30,6 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-   /*@Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors()
-                .and()
-                .csrf(csrf -> csrf.disable()) // Disable CSRF (you may want to enable it in production)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/users/register").permitAll()
-                        .requestMatchers("/api/tasks/**").permitAll()
-                        .requestMatchers("/api/users/**").permitAll()
-                        .requestMatchers("/oauth2/authorization/google").permitAll() // Allow OAuth2 login
-                        .anyRequest().authenticated()) // All other endpoints require authentication
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/oauth2/authorization/google") // Login page endpoint
-                        .defaultSuccessUrl("/api/tasks", true) // Redirect after successful login
-                        .failureUrl("/login?error=true") // Redirect on login failure
-                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
-                                .oidcUserService(oidcUserService()))) // Configure user info retrieval
-                .userDetailsService(customUserDetailsService); // Custom UserDetailsService
-        return http.build(); // Return the security filter chain
-    }*/
    @Bean
    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
        http

@@ -21,42 +21,101 @@ import java.util.List;
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
 public class TaskController {
+    // Service dependency to handle business logic for tasks
     @Autowired
     private TaskService taskService;
 
-
+    /**
+     * Create a new task.
+     * Method Type: POST
+     * Access: Requires authenticated user
+     *
+     * @return The created task
+     */
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
         return ResponseEntity.ok(taskService.createTask(task));
     }
 
+
+    /**
+     * Retrieve task by id
+     * Method Type: GET
+     * Access: Requires authenticated user
+     *
+     * @return List of tasks by their id.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTask(@PathVariable Long id) {
         return ResponseEntity.ok(taskService.getTask(id));
     }
 
+    /**
+     * Retrieve all tasks.
+     * Method Type: GET
+     * Access: Requires authenticated user
+     *
+     * @return List of all tasks in the system.
+     */
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
         return ResponseEntity.ok(taskService.getAllTasks());
     }
 
+    /**
+     * Update an existing task.
+     * Method Type: PUT
+     * Access: Requires authenticated user
+     *
+     * @param id The ID of the task to be updated.
+     * @param taskDetails Updated task data.
+     * @return The updated task.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task taskDetails) {
         return ResponseEntity.ok(taskService.updateTask(id, taskDetails));
     }
 
+    /**
+     * Delete a task.
+     * Method Type: DELETE
+     * Access: Requires authenticated user
+     *
+     * @param id The ID of the task to delete.
+     * @return Response entity with ok status.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Share a task.
+     * Method Type: POST
+     * Access: Requires authenticated user
+     *
+     * @param taskId The ID of the task to be shared.
+     * @param username The user to receive the shared task.
+     * @return The shared task.
+     */
     @PostMapping("/{taskId}/share")
     public ResponseEntity<Task> shareTask(@PathVariable Long taskId, @RequestParam String username) {
         Task sharedTask = taskService.sharedTaskWithUser(taskId, username);
         return ResponseEntity.ok(sharedTask);
     }
 
+
+    /**
+     * Assign a task.
+     * Method Type: POST
+     * Access: Requires authenticated user
+     *
+     * @param taskId The ID of the task to be assigned.
+     * @param username The user to receive the assigned task.
+     * @param oidcUser The user assigning the task should be authenticated
+     * @return The assigned task.
+     */
     @PostMapping("/{taskId}/assign")
     public ResponseEntity<?> assignTask(@PathVariable Long taskId, @RequestParam String username,
                                         @AuthenticationPrincipal OidcUser oidcUser, Authentication authentication,

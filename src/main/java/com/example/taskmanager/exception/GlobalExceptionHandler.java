@@ -8,13 +8,23 @@ import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    //Handles custom ResourceNotFoundException
+    /**
+     * Handles ResourceNotFoundException thrown across the entire application.
+     *
+     * @param ex The exception to handle.
+     * @return ResponseEntity containing the error message and HTTP status.
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    //Handles general exceptions
+    /**
+     * Handles General Exceptions thrown across the entire application.
+     *
+     * @param ex The exception to handle.
+     * @return ResponseEntity containing the error message and HTTP status.
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
         ex.printStackTrace();
