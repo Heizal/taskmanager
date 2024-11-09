@@ -7,14 +7,13 @@ import com.example.taskmanager.model.User;
 import com.example.taskmanager.repository.RoleRepository;
 import com.example.taskmanager.repository.UserRepository;
 import com.example.taskmanager.service.JwtProvider;
+import com.example.taskmanager.service.OAuthTokenService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +32,27 @@ public class AuthController {
     private RoleRepository roleRepository;
     @Autowired
     private JwtProvider jwtProvider;
+    @Autowired
+    private OAuthTokenService oAuthTokenService;
+
+    @GetMapping("/oauth2/callback")
+    public ResponseEntity<?> handleOAuthCallback(@RequestParam String code) {
+        // Use the authorization code to get tokens
+        Map<String, String> tokenResponse = oAuthTokenService.exchangeCodeForTokens(code);
+
+        // Return access token, refresh token, and their validity periods
+        return ResponseEntity.ok(tokenResponse);
+    }
+
+    // New endpoint to refresh tokens
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestParam String refreshToken) {
+        // Use the refresh token to get a new access token
+        Map<String, String> tokenResponse = oAuthTokenService.refreshAccessToken(refreshToken);
+
+        // Return new access token along with validity period
+        return ResponseEntity.ok(tokenResponse);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto registrationDto) {
@@ -72,16 +92,19 @@ public class AuthController {
             if (passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
                 // Assuming we have a way to generate a JWT token, for example using a JwtProvider service
                 String accessToken = jwtProvider.generateToken(user.getUsername());
+                String refreshToken = jwtProvider.generateRefreshToken(user.getUsername());
 
                 // Return a JSON object instead of plain text
                 Map<String, String> response = new HashMap<>();
                 response.put("message", "Login successful");
                 response.put("accessToken", accessToken);
+                response.put("refreshToken", refreshToken);
+                response.put("accessTokenValidity", String.valueOf(3600));
+                response.put("refreshTokenValidity", String.valueOf(86400));
 
                 return ResponseEntity.ok(response);  // Return JSON
             }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
-
 }
