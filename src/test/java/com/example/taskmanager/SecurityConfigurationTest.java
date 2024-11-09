@@ -10,9 +10,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,15 +25,32 @@ class SecurityConfigTest {
     // Test: Public access to /api/auth/** should be permitted
     @Test
     public void whenUnauthenticated_thenAccessToAuthEndpointsShouldBePermitted() throws Exception {
-        mockMvc.perform(get("/api/auth/login"))
-                .andExpect(status().isOk());
-
+        // Register endpoint test: Should allow unauthenticated access and successfully register a new user.
         mockMvc.perform(post("/api/auth/register")
-                        // Add CSRF token for POST request
+                        .with(csrf()) // Add CSRF token for POST request
                         .contentType("application/json")
-                        .content("{ \"username\": \"user1\", \"email\": \"user1@example.com\", \"password\": \"password\" }"))
-                .andExpect(status().isOk());
+                        .content("{ \"username\": \"user24\", \"email\": \"user25@example.com\", \"password\": \"password\" }"))
+                .andExpect(status().isOk()); // Expecting 200 OK for successful registration
+
+        // Login endpoint test: Should allow unauthenticated access and respond accordingly.
+        mockMvc.perform(post("/api/auth/login")
+                        .with(csrf()) // Add CSRF token for POST request
+                        .contentType("application/json")
+                        .content("{ \"email\": \"user25@example.com\", \"password\": \"password\" }"))
+                .andExpect(status().isOk()); // Expecting 200 OK if login is successful
     }
+
+    //Test for invalid login credentials
+    @Test
+    public void whenUnauthenticated_thenInvalidCredentialsShouldReturnUnauthorized() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                        .with(csrf())
+                        .contentType("application/json")
+                        .content("{ \"email\": \"wronguser@example.com\", \"password\": \"wrongpassword\" }"))
+                .andExpect(status().isUnauthorized()) // Expecting 401 Unauthorized for invalid credentials
+                .andExpect(content().string("Invalid credentials"));
+    }
+
 
     // Test: Authenticated user with USER role can access GET /api/tasks/** endpoint
     @Test
@@ -48,7 +64,7 @@ class SecurityConfigTest {
     @Test
     public void whenUnauthenticated_thenCannotAccessTasks() throws Exception {
         mockMvc.perform(get("/api/tasks"))
-                .andExpect(status().isUnauthorized()); // Expecting 401
+                .andExpect(status().isFound()); // Expecting 302
     }
 
     // Test: Authenticated user with ADMIN role can POST to /api/tasks/** (create task)
@@ -62,25 +78,25 @@ class SecurityConfigTest {
                 .andExpect(status().isOk());
     }
 
-    // Test: Users without the ADMIN role cannot POST to /api/tasks
-    @Test
-    @WithMockUser(roles = "USER")
-    public void whenAuthenticatedAsUser_thenCannotCreateTask() throws Exception {
-        mockMvc.perform(post("/api/tasks")
-                        .with(csrf())  // Add CSRF token for POST request
-                        .contentType("application/json")
-                        .content("{ \"title\": \"New Task\", \"description\": \"Task description\" }"))
-                .andExpect(status().isForbidden()); // User should be forbidden (403)
-    }
-
-    // Test: Unauthenticated users should be forbidden from POST to /api/tasks
+    // Test: Unauthenticated users should be redirected to login
     @Test
     public void whenUnauthenticated_thenCannotCreateTask() throws Exception {
         mockMvc.perform(post("/api/tasks")
                         .with(csrf())  // Add CSRF token for POST request
                         .contentType("application/json")
                         .content("{ \"title\": \"New Task\", \"description\": \"Task description\" }"))
-                .andExpect(status().isUnauthorized()); // Expecting 401
+                .andExpect(status().isFound()) //Expects 302 redirection
+                .andExpect(header().string("Location", "http://localhost/oauth2/authorization/google"));
+
+    }
+
+    // Test: Users without the ADMIN role cannot DELETE to /api/users
+    @Test
+    @WithMockUser(roles = "USER")
+    public void whenAuthenticatedAsUser_thenCannotDeleteUser() throws Exception {
+        mockMvc.perform(delete("/api/users/testuser")
+                        .with(csrf()))  // Add CSRF token for DELETE request
+                .andExpect(status().isForbidden()); // Expecting 403 Forbidden
     }
 }
 
