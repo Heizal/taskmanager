@@ -8,7 +8,6 @@ import com.example.taskmanager.repository.RoleRepository;
 import com.example.taskmanager.repository.UserRepository;
 import com.example.taskmanager.service.JwtProvider;
 import com.example.taskmanager.service.OAuthTokenService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,17 +22,22 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final JwtProvider jwtProvider;
+    private final OAuthTokenService oAuthTokenService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private JwtProvider jwtProvider;
-    @Autowired
-    private OAuthTokenService oAuthTokenService;
+    public AuthController(UserRepository userRepository, RoleRepository roleRepository,
+                          JwtProvider jwtProvider, OAuthTokenService oAuthTokenService,
+                          PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.jwtProvider = jwtProvider;
+        this.oAuthTokenService = oAuthTokenService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping("/oauth2/callback")
     public ResponseEntity<?> handleOAuthCallback(@RequestParam String code) {
@@ -47,11 +51,21 @@ public class AuthController {
     // New endpoint to refresh tokens
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestParam String refreshToken) {
-        // Use the refresh token to get a new access token
-        Map<String, String> tokenResponse = oAuthTokenService.refreshAccessToken(refreshToken);
+        //Validate the refresh token using the public key
+        boolean isValid = jwtProvider.validateToken(refreshToken);
 
-        // Return new access token along with validity period
-        return ResponseEntity.ok(tokenResponse);
+        if (isValid){
+            //If valid generate a new access token
+            String username = jwtProvider.extractUsername(refreshToken);
+            String newAccessToken = jwtProvider.generateToken(username);
+
+            Map<String, String> tokenResponse = new HashMap<>();
+            tokenResponse.put("accessToken", newAccessToken);
+            tokenResponse.put("accessTokenValidity", String.valueOf(3600));
+
+            return ResponseEntity.ok(tokenResponse);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
     }
 
     @PostMapping("/register")
@@ -90,7 +104,7 @@ public class AuthController {
 
             // Verify password
             if (passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-                // Assuming we have a way to generate a JWT token, for example using a JwtProvider service
+                // Generate JWT tokens
                 String accessToken = jwtProvider.generateToken(user.getUsername());
                 String refreshToken = jwtProvider.generateRefreshToken(user.getUsername());
 

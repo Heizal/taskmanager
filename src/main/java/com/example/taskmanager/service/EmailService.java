@@ -5,10 +5,8 @@ import com.google.api.services.gmail.model.Message;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
@@ -16,14 +14,18 @@ import java.util.Properties;
 
 @Service
 public class EmailService {
-    @Autowired
-    private Gmail gmailService;
+    private final Gmail gmailService;
+    private final OAuth2AuthorizedClientRepository authorizedClientRepository;
+    private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Autowired
-    private OAuth2AuthorizedClientRepository authorizedClientRepository;
-
-    @Autowired
-    private ClientRegistrationRepository clientRegistrationRepository;
+    public EmailService(Gmail gmailService,
+                        OAuth2AuthorizedClientRepository authorizedClientRepository,
+                        ClientRegistrationRepository clientRegistrationRepository) {
+        this.gmailService = gmailService;
+        this.authorizedClientRepository = authorizedClientRepository;
+        this.clientRegistrationRepository = clientRegistrationRepository;
+    }
 
     // Send email on behalf of the user using Gmail API and access token
     public void sendEmailWithGmailApi(String userEmail, String to, String subject, String body, String accessToken) throws Exception {
