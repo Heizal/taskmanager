@@ -55,16 +55,16 @@ $ mvn spring-boot:run
 
 ### 5. Accessing the API
 
-- By default, the server runs on port `8080`.
-- Test the API using **Postman** or another API testing tool at [http://localhost:8080](http://localhost:8080).
+- By default, the server runs on port `8443`.
+- Test the API using **Postman** or another API testing tool at [https://localhost:8443](https://localhost:8443).
 
 ## Troubleshooting
 
 ### Common Issues
 
 - **Database Connection Error**: Verify that **PostgreSQL** is running and the credentials in `.env` are correct.
-- **OAuth Issues**: Ensure `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are correctly configured in **Google Cloud Console**.
-- **Port Conflicts**: If port `8080` is in use, change the port in the `application.properties` file or set the `server.port` environment variable.
+- **OAuth Issues**: Ensure `GOOGLE_CLIENT_ID` , `GOOGLE_CLIENT_SECRET` and `GOOGLE_REDIRECT_URI` are correctly configured in **Google Cloud Console**.
+- **Port Conflicts**: If port `8443` is in use, change the port in the `application.properties` file or set the `server.port` environment variable.
 
 ### Useful Commands
 

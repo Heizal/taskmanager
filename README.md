@@ -41,6 +41,8 @@ This backend serves as the central hub for managing tasks, assigning responsibil
 ## System Architecture
 - A full conceptual guide with the system architecture can be found in the [CONCEPTUAL_GUIDE.md](docs/CONCEPTUAL_GUIDE.md)
 
+## Threat model and security measures
+- A comprehensive threat model of the backend system including the security measures taken can be found in [THREAT_MODEL.md](docs/THREAT_MODEL.md)
 ## Contributing
 Contributions are welcome! To contribute:
 - Fork the repository.
