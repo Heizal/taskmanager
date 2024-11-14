@@ -5,8 +5,23 @@ This guide is designed to help product owners and developers get familiar with u
 ## API Overview
 
 ### Authentication
-- **POST /api/auth/login**: Log in users with OAuth credentials.
 - **POST /api/auth/register**: Register a new user.
+ - **Request Body**:
+    ```json
+    {
+      "username": "user@example.com",
+      "email": "user@example.com",
+      "password": "password123",
+      "roleName": "USER" //Has to be .toUpperCase      
+    }
+    ```
+  - **Response**: Returns registered user.
+  - **Status Codes**:
+    - **200 OK**: User registered successfully.
+    - **400 Bad Request**: Username is already taken!
+    - **400 Bad Request**: Role is required for registration!
+    - 
+- **POST /api/auth/login**: Log in users with OAuth credentials.
 
 ### Task Management
 - **GET /api/tasks**: Retrieve all tasks.
