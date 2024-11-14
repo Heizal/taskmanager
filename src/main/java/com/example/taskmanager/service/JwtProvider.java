@@ -47,6 +47,7 @@ public class JwtProvider {
         byte[] decoded = Base64.getDecoder().decode(key);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        this.privateKey = keyFactory.generatePrivate(keySpec);
         return keyFactory.generatePrivate(keySpec);
     }
 
@@ -60,6 +61,7 @@ public class JwtProvider {
         byte[] decoded = Base64.getDecoder().decode(key);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        this.publicKey = keyFactory.generatePublic(keySpec);
         return keyFactory.generatePublic(keySpec);
     }
 
