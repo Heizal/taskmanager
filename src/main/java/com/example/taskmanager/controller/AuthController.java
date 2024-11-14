@@ -48,7 +48,7 @@ public class AuthController {
         return ResponseEntity.ok(tokenResponse);
     }
 
-    // New endpoint to refresh tokens
+    // endpoint to refresh tokens
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestParam String refreshToken) {
         //Validate the refresh token using the public key
@@ -57,13 +57,20 @@ public class AuthController {
         if (isValid){
             //If valid generate a new access token
             String username = jwtProvider.extractUsername(refreshToken);
-            String newAccessToken = jwtProvider.generateToken(username);
 
-            Map<String, String> tokenResponse = new HashMap<>();
-            tokenResponse.put("accessToken", newAccessToken);
-            tokenResponse.put("accessTokenValidity", String.valueOf(3600));
+            //Find by username
+            Optional<User> userOptional = userRepository.findByUsername(username);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
 
-            return ResponseEntity.ok(tokenResponse);
+                String newAccessToken = jwtProvider.generateToken(user);
+
+                Map<String, String> tokenResponse = new HashMap<>();
+                tokenResponse.put("accessToken", newAccessToken);
+                tokenResponse.put("accessTokenValidity", String.valueOf(3600));
+
+                return ResponseEntity.ok(tokenResponse);
+            }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
     }
@@ -74,9 +81,16 @@ public class AuthController {
             return new ResponseEntity<>("Username is already taken!", HttpStatus.BAD_REQUEST);
         }
 
-        Role userRole = roleRepository.findByName("USER");
-        if (userRole == null) {
-            return new ResponseEntity<>("Default role not found!", HttpStatus.INTERNAL_SERVER_ERROR);
+        // Validate and get the role name
+        String roleName = registrationDto.getRoleName();
+        if (roleName == null || roleName.trim().isEmpty()) {
+            return new ResponseEntity<>("Role is required for registration!", HttpStatus.BAD_REQUEST);
+        }
+
+        // Convert role name to uppercase to match expected values (e.g., "USER", "ADMIN")
+        Role selectedRole = roleRepository.findByName(roleName.toUpperCase());
+        if (selectedRole == null) {
+            return new ResponseEntity<>("Role not found!", HttpStatus.BAD_REQUEST);
         }
 
         // Encrypt password and create the user
@@ -85,11 +99,11 @@ public class AuthController {
         user.setEmail(registrationDto.getEmail());
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
 
-        // Set default roles (initialize role set if null)
+        // Set the selected role (initialize role set if null)
         if (user.getRoles() == null) {
             user.setRoles(new HashSet<>());
         }
-        user.getRoles().add(userRole);
+        user.getRoles().add(selectedRole);
 
         userRepository.save(user);
         return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
@@ -105,8 +119,8 @@ public class AuthController {
             // Verify password
             if (passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
                 // Generate JWT tokens
-                String accessToken = jwtProvider.generateToken(user.getUsername());
-                String refreshToken = jwtProvider.generateRefreshToken(user.getUsername());
+                String accessToken = jwtProvider.generateToken(user);
+                String refreshToken = jwtProvider.generateRefreshToken(user);
 
                 // Return a JSON object instead of plain text
                 Map<String, String> response = new HashMap<>();

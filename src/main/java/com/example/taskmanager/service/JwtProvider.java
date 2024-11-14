@@ -1,5 +1,7 @@
 package com.example.taskmanager.service;
 
+import com.example.taskmanager.model.User;
+import com.example.taskmanager.model.Role;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -15,6 +17,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtProvider {
@@ -65,19 +68,21 @@ public class JwtProvider {
         return keyFactory.generatePublic(keySpec);
     }
 
-    //Generate token
-    public String generateToken(String username) {
+    // Generate token with roles as claims
+    public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(user.getUsername())
+                .claim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList())) // Add roles as a claim
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
     }
 
-    public String generateRefreshToken(String username) {
+    public String generateRefreshToken(User user) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(user.getUsername())
+                .claim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList())) // Add roles as a claim
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.RS256, privateKey)
