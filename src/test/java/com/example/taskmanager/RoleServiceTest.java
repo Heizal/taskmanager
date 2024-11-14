@@ -29,16 +29,16 @@ class RoleServiceTest {
     void getRoleByName_ShouldReturnRole_WhenRoleExists() {
         // Arrange
         Role role = new Role();
-        role.setName("ROLE_USER");
+        role.setName("USER");
 
-        when(roleRepository.findByName("ROLE_USER")).thenReturn(role);
+        when(roleRepository.findByName("USER")).thenReturn(role);
 
         // Act
-        Role foundRole = roleService.getRoleByName("ROLE_USER");
+        Role foundRole = roleService.getRoleByName("USER");
 
         // Assert
         assertNotNull(foundRole);
-        assertEquals("ROLE_USER", foundRole.getName());
+        assertEquals("USER", foundRole.getName());
     }
 
     //Test when Role does not exist
@@ -58,13 +58,13 @@ class RoleServiceTest {
     void createRole_ShouldThrowException_WhenRoleAlreadyExists() {
         // Arrange
         Role existingRole = new Role();
-        existingRole.setName("ROLE_ADMIN");
+        existingRole.setName("ADMIN");
 
-        when(roleRepository.findByName("ROLE_ADMIN")).thenReturn(existingRole);
+        when(roleRepository.findByName("ADMIN")).thenReturn(existingRole);
 
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            roleService.createRole("ROLE_ADMIN");
+            roleService.createRole("ADMIN");
         });
 
         assertEquals("Role already exists", exception.getMessage());
