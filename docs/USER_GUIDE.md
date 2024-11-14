@@ -51,11 +51,12 @@ This guide is designed to help product owners and developers get familiar with u
   - **Status Codes**:
     - **200 OK**: Task updated successfully.
     - **404 Not Found**: Task not found.
-- **DELETE /api/tasks/{id}**: Delete a task.
+- **DELETE /api/tasks/{id}**: Delete a task. **THIS ENDPOINT REQUIRED ADMIN ACCESS**
   - **Response**: Confirmation message upon successful deletion.
   - **Status Codes**:
     - **200 OK**: Task deleted successfully.
     - **404 Not Found**: Task not found.
+    - **401 Unauthorized**
 
 ### User
 - **POST /api/users/register**: Register a new user.
@@ -69,8 +70,8 @@ This guide is designed to help product owners and developers get familiar with u
     ```
   - **Response**: Returns registered user.
   - **Status Codes**:
-    - **200 OK**: User registered successfully.
-    - **403 Prohibited**: **THIS ENDPOINT REQUIRED ADMIN ACCESS**
+    - **200 OK**: User registered successfully. **THIS ENDPOINT REQUIRED ADMIN ACCESS**
+    - **401 Unauthorized**
 - **GET /api/users/username**: Get's a specific user by their username
 - **PUT /api/users/username**: Updates users information. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
 - **DELETE /api/users/username**: Deletes a user from the database. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
