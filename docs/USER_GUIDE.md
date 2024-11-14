@@ -6,7 +6,7 @@ This guide is designed to help product owners and developers get familiar with u
 
 ### Authentication
 - **POST /api/auth/register**: Register a new user.
- - **Request Body**:
+  - **Request Body**:
     ```json
     {
       "username": "user@example.com",
