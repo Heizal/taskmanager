@@ -68,9 +68,9 @@ This guide is designed to help product owners and developers get familiar with u
       "password": "password123",   
     }
     ```
-  - **Response**: Returns registered user.
+  - **Response**: Returns registered user. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
   - **Status Codes**:
-    - **200 OK**: User registered successfully. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
+    - **200 OK**: User registered successfully.
     - **401 Unauthorized**
 - **GET /api/users/username**: Get's a specific user by their username
 - **PUT /api/users/username**: Updates users information. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
