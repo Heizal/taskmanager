@@ -59,7 +59,7 @@ This guide is designed to help product owners and developers get familiar with u
     - **401 Unauthorized**
 
 ### User
-- **POST /api/users/register**: Register a new user.
+- **POST /api/users/register**: Register a new user. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
   - **Request Body**:
     ```json
     {
@@ -68,7 +68,7 @@ This guide is designed to help product owners and developers get familiar with u
       "password": "password123",   
     }
     ```
-  - **Response**: Returns registered user. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
+  - **Response**: Returns registered user.
   - **Status Codes**:
     - **200 OK**: User registered successfully.
     - **401 Unauthorized**
