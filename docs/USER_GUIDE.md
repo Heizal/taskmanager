@@ -12,7 +12,7 @@ This guide is designed to help product owners and developers get familiar with u
       "username": "user@example.com",
       "email": "user@example.com",
       "password": "password123",
-      "roleName": "USER" //Has to be .toUpperCase      
+      "roleName": "USER"      
     }
     ```
   - **Response**: Returns registered user.
@@ -20,7 +20,6 @@ This guide is designed to help product owners and developers get familiar with u
     - **200 OK**: User registered successfully.
     - **400 Bad Request**: Username is already taken!
     - **400 Bad Request**: Role is required for registration!
-    - 
 - **POST /api/auth/login**: Log in users with OAuth credentials.
 
 ### Task Management
