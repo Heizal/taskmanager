@@ -51,7 +51,7 @@ This guide is designed to help product owners and developers get familiar with u
   - **Status Codes**:
     - **200 OK**: Task updated successfully.
     - **404 Not Found**: Task not found.
-- **DELETE /api/tasks/{id}**: Delete a task. **THIS ENDPOINT REQUIRED ADMIN ACCESS**
+- **DELETE /api/tasks/{id}**: Delete a task. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
   - **Response**: Confirmation message upon successful deletion.
   - **Status Codes**:
     - **200 OK**: Task deleted successfully.
@@ -70,7 +70,7 @@ This guide is designed to help product owners and developers get familiar with u
     ```
   - **Response**: Returns registered user.
   - **Status Codes**:
-    - **200 OK**: User registered successfully. **THIS ENDPOINT REQUIRED ADMIN ACCESS**
+    - **200 OK**: User registered successfully. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
     - **401 Unauthorized**
 - **GET /api/users/username**: Get's a specific user by their username
 - **PUT /api/users/username**: Updates users information. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
@@ -122,8 +122,7 @@ This guide is designed to help product owners and developers get familiar with u
 ### Error Handling
 Here are common errors you may encounter while using TaskManager and their solutions:
 
-- **401 Unauthorized**: Ensure you are logged in via the **OAuth** login endpoint and provide the correct access token for authorized endpoints.
-- **403 Forbidden**: You do not have the required permissions to perform this action. Ensure your user role is correctly configured.
+- **401 Unauthorized**: Ensure you are logged in via the **OAuth** login endpoint and provide the correct access token for authorized endpoints. You will get this response on the `user/tasks` endpoints if you do have the required permissions to perform a certain action. Ensure your role rights are correctly configured.
 - **404 Not Found**: The resource (task, user, etc.) you are looking for doesn't exist.
 - **500 Internal Server Error**: Check the logs for server-related issues. Most often caused by misconfigured database or missing environment variables.
 
