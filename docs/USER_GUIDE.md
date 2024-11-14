@@ -57,6 +57,24 @@ This guide is designed to help product owners and developers get familiar with u
     - **200 OK**: Task deleted successfully.
     - **404 Not Found**: Task not found.
 
+### User
+- **POST /api/users/register**: Register a new user.
+  - **Request Body**:
+    ```json
+    {
+      "username": "user@example.com",
+      "email": "user@example.com",
+      "password": "password123",   
+    }
+    ```
+  - **Response**: Returns registered user.
+  - **Status Codes**:
+    - **200 OK**: User registered successfully.
+    - **403 Prohibited**: **THIS ENDPOINT REQUIRED ADMIN ACCESS**
+- **GET /api/users/username**: Get's a specific user by their username
+- **PUT /api/users/username**: Updates users information. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
+- **DELETE /api/users/username**: Deletes a user from the database. **THIS ENDPOINT REQUIRES ADMIN ACCESS**
+
 ### Task Sharing and Assignment
 - **POST /api/tasks/{taskId}/share**: Share a task with another user.
   - **Request Body**:
