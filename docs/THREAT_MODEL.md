@@ -1,4 +1,4 @@
-# Threat model and security measures.
+# Threat model and security measures implemented.
 
 ## Overview
 To create this threat model I was inspired by the STRIDE Threat model. First I lay out the security threat, the endpoints that could be affected and finally security measures I implemented to mitigate against these threats
@@ -70,4 +70,18 @@ To create this threat model I was inspired by the STRIDE Threat model. First I l
 - #### Security measures
 
   - **Token Expiry**: **Short-lived JWTs** _(15 minutes)_ ensure that even if many tokens are issued, they expire soon, reducing the load associated with verification.
-  - **COULD DO (Didnt do):** Rate limiting on sensitive endpoints like auth endpoints
+  - **COULD DO (Didn't implement yet):** Rate limiting on sensitive endpoints like auth endpoints
+
+### 6. Elevation of Privilege
+
+**Threat:** A lower-privileged user gaining higher privileges.
+
+- #### **Endpoints affected**
+
+  - User endpoints: `/api/users`
+  - Task endpoints: `/api/tasks`
+
+- #### Security measures
+
+  - **Role-Based Checks:** Only users with an ADMIN role can access `/api/users/**` endpoints.
+  - **Claims in JWT:** Roles are included in the JWT claims and are verified before allowing access to protected resources.

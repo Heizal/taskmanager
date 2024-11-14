@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/login", "/api/auth/refresh-token").permitAll() // Publicly accessible endpoints
                 .requestMatchers("/api/auth/register", "/oauth2/authorization/google", "/api/auth/oauth2/callback").permitAll() // OAuth-required endpoints
                 .requestMatchers("/api/users/**").hasRole("ADMIN") // ADMIN-only endpoints
+                .requestMatchers(HttpMethod.DELETE, "/api/tasks/**").hasRole("ADMIN")
                 .anyRequest().authenticated()); // All other endpoints require JWT authentication
 
         // OAuth2 Login Configuration
