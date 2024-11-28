@@ -29,14 +29,14 @@ class SecurityConfigTest {
         mockMvc.perform(post("/api/auth/register")
                         .with(csrf()) // Add CSRF token for POST request
                         .contentType("application/json")
-                        .content("{ \"username\": \"user24\", \"email\": \"user25@example.com\", \"password\": \"password\" }"))
+                        .content("{ \"username\": \"user27\", \"email\": \"user28@example.com\", \"password\": \"password\" , \"roleName\": \"USER\"}"))
                 .andExpect(status().isOk()); // Expecting 200 OK for successful registration
 
         // Login endpoint test: Should allow unauthenticated access and respond accordingly.
         mockMvc.perform(post("/api/auth/login")
                         .with(csrf()) // Add CSRF token for POST request
                         .contentType("application/json")
-                        .content("{ \"email\": \"user25@example.com\", \"password\": \"password\" }"))
+                        .content("{ \"email\": \"user28@example.com\", \"password\": \"password\" }"))
                 .andExpect(status().isOk()); // Expecting 200 OK if login is successful
     }
 
@@ -64,7 +64,7 @@ class SecurityConfigTest {
     @Test
     public void whenUnauthenticated_thenCannotAccessTasks() throws Exception {
         mockMvc.perform(get("/api/tasks"))
-                .andExpect(status().isFound()); // Expecting 302
+                .andExpect(status().isUnauthorized()); // Expecting 401
     }
 
     // Test: Authenticated user with ADMIN role can POST to /api/tasks/** (create task)
@@ -78,15 +78,14 @@ class SecurityConfigTest {
                 .andExpect(status().isOk());
     }
 
-    // Test: Unauthenticated users should be redirected to login
+    // Test: Unauthenticated users cannot create tasks
     @Test
     public void whenUnauthenticated_thenCannotCreateTask() throws Exception {
         mockMvc.perform(post("/api/tasks")
                         .with(csrf())  // Add CSRF token for POST request
                         .contentType("application/json")
                         .content("{ \"title\": \"New Task\", \"description\": \"Task description\" }"))
-                .andExpect(status().isFound()) //Expects 302 redirection
-                .andExpect(header().string("Location", "http://localhost/oauth2/authorization/google"));
+                .andExpect(status().isUnauthorized()); //Expects 302 redirection
 
     }
 
