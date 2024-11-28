@@ -12,7 +12,7 @@ This backend serves as the central hub for managing tasks, assigning responsibil
 - **Task Management**: Create, update, delete, assign, and comment on tasks.
 - **Role-Based Access Control**: Secure actions based on user roles.
 - **Task Sharing and Comments**: Developers can share tasks and communicate via comments to improve collaboration.
-- **OAuth Authentication**: Secure user authentication with **Google OAuth2**.
+- **OAuth Authentication**: Secure user authentication with **JWT** or **Google Authentication**
 - **Email Notifications**: Send email alerts to users for task assignments.
 
 ## Technologies Used
@@ -29,7 +29,7 @@ This backend serves as the central hub for managing tasks, assigning responsibil
 - **Java 17**
 - **Maven**
 - **PostgreSQL**
-- **An OAuth 2.0 client ID** (configured in Google Cloud Console)
+- **An OAuth 2.0 client ID for Google Authentication** (configured in Google Cloud Console)
 
 ### Installation Instructions
 - Find the installation instructions in the [INSTALLATION.md](docs/INSTALLATION.md)
@@ -43,6 +43,7 @@ This backend serves as the central hub for managing tasks, assigning responsibil
 
 ## Threat model and security measures
 - A comprehensive threat model of the backend system including the security measures taken can be found in [THREAT_MODEL.md](docs/THREAT_MODEL.md)
+
 ## Contributing
 Contributions are welcome! To contribute:
 - Fork the repository.
