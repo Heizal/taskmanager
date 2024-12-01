@@ -29,6 +29,7 @@ To create this threat model I was inspired by the STRIDE Threat model. First I l
 
   - **HTTPS/SSL**: All communication between the client and server is done over HTTPS. This encrypts the data, preventing attackers from intercepting and altering it in transit.
   - For a user to access any of these endpoints they have to authenticate themselves. JWTs ensure the integrity of each request as any modification to a token invalidates its signature which would block out an attacker
+  - Input validation ensuring that the data provided by users matches expected formats or constraints.
 
 ### 3. Repudiation
 
