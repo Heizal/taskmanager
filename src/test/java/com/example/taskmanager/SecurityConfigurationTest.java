@@ -1,26 +1,22 @@
 package com.example.taskmanager;
 
-import com.example.taskmanager.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class SecurityConfigTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private UserService userService;
 
     // Test: Public access to /api/auth/** should be permitted
     @Test
@@ -29,14 +25,14 @@ class SecurityConfigTest {
         mockMvc.perform(post("/api/auth/register")
                         .with(csrf()) // Add CSRF token for POST request
                         .contentType("application/json")
-                        .content("{ \"username\": \"user27\", \"email\": \"user28@example.com\", \"password\": \"password\" , \"roleName\": \"USER\"}"))
+                        .content("{ \"username\": \"user30\", \"email\": \"user230@example.com\", \"password\": \"password\" , \"roleName\": \"USER\"}"))
                 .andExpect(status().isOk()); // Expecting 200 OK for successful registration
 
         // Login endpoint test: Should allow unauthenticated access and respond accordingly.
         mockMvc.perform(post("/api/auth/login")
                         .with(csrf()) // Add CSRF token for POST request
                         .contentType("application/json")
-                        .content("{ \"email\": \"user28@example.com\", \"password\": \"password\" }"))
+                        .content("{ \"email\": \"user29@example.com\", \"password\": \"password\" }"))
                 .andExpect(status().isOk()); // Expecting 200 OK if login is successful
     }
 

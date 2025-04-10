@@ -8,6 +8,7 @@ import com.example.taskmanager.repository.RoleRepository;
 import com.example.taskmanager.repository.UserRepository;
 import com.example.taskmanager.service.JwtProvider;
 import com.example.taskmanager.service.OAuthTokenService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,7 +77,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto registrationDto) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegistrationDto registrationDto) {
         if (userRepository.existsByUsername(registrationDto.getUsername())) {
             return new ResponseEntity<>("Username is already taken!", HttpStatus.BAD_REQUEST);
         }
@@ -87,7 +88,7 @@ public class AuthController {
             return new ResponseEntity<>("Role is required for registration!", HttpStatus.BAD_REQUEST);
         }
 
-        // Convert role name to uppercase to match expected values (e.g., "USER", "ADMIN")
+        // Convert role name to uppercase to match expected values
         Role selectedRole = roleRepository.findByName(roleName.toUpperCase());
         if (selectedRole == null) {
             return new ResponseEntity<>("Role not found!", HttpStatus.BAD_REQUEST);

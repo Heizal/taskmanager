@@ -22,13 +22,13 @@ public class OAuth2SecuredEndpointTest {
     @WithMockUser(roles = "USER", username = "user1")
     public void whenAuthenticatedWithOAuth_thenAccessSecuredEndpoint() throws Exception {
         mockMvc.perform(get("/api/tasks"))
-                .andExpect(status().isOk()); // Assuming USER has access to /api/tasks
+                .andExpect(status().isOk());
     }
 
     // Test accessing a secured endpoint without any authentication
     @Test
     public void whenNotAuthenticated_thenAccessSecuredEndpointShouldBeForbidden() throws Exception {
         mockMvc.perform(get("/api/tasks"))
-                .andExpect(status().isFound()); // Expecting 302 if no authentication
+                .andExpect(status().isUnauthorized()); // Expecting 401 if no authentication
     }
 }
