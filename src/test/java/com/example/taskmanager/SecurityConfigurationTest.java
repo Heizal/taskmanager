@@ -1,5 +1,6 @@
 package com.example.taskmanager;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,14 +26,14 @@ class SecurityConfigTest {
         mockMvc.perform(post("/api/auth/register")
                         .with(csrf()) // Add CSRF token for POST request
                         .contentType("application/json")
-                        .content("{ \"username\": \"user9998\", \"email\": \"user9999@example.com\", \"password\": \"Password1\" , \"roleName\": \"USER\"}"))
+                        .content("{ \"username\": \"user9997\", \"email\": \"user9997@example.com\", \"password\": \"Password1\" , \"roleName\": \"USER\"}"))
                 .andExpect(status().isOk()); // Expecting 200 OK for successful registration
 
         // Login endpoint test: Should allow unauthenticated access and respond accordingly.
         mockMvc.perform(post("/api/auth/login")
                         .with(csrf()) // Add CSRF token for POST request
                         .contentType("application/json")
-                        .content("{ \"email\": \"user9998@example.com\", \"password\": \"Password1\" }"))
+                        .content("{ \"email\": \"user9997@example.com\", \"password\": \"Password1\" }"))
                 .andExpect(status().isOk()); // Expecting 200 OK if login is successful
     }
 
