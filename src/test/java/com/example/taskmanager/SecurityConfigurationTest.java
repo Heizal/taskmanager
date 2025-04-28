@@ -25,14 +25,14 @@ class SecurityConfigTest {
         mockMvc.perform(post("/api/auth/register")
                         .with(csrf()) // Add CSRF token for POST request
                         .contentType("application/json")
-                        .content("{ \"username\": \"user30\", \"email\": \"user230@example.com\", \"password\": \"password\" , \"roleName\": \"USER\"}"))
+                        .content("{ \"username\": \"user9998\", \"email\": \"user9999@example.com\", \"password\": \"Password1\" , \"roleName\": \"USER\"}"))
                 .andExpect(status().isOk()); // Expecting 200 OK for successful registration
 
         // Login endpoint test: Should allow unauthenticated access and respond accordingly.
         mockMvc.perform(post("/api/auth/login")
                         .with(csrf()) // Add CSRF token for POST request
                         .contentType("application/json")
-                        .content("{ \"email\": \"user29@example.com\", \"password\": \"password\" }"))
+                        .content("{ \"email\": \"user9998@example.com\", \"password\": \"Password1\" }"))
                 .andExpect(status().isOk()); // Expecting 200 OK if login is successful
     }
 
