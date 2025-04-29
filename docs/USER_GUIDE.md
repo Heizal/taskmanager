@@ -2,6 +2,10 @@
 
 ## Overview
 This guide is designed to help product owners and developers get familiar with using TaskManager's RESTAPI.
+
+## Usage
+Download the Postman collection from the `docs/` folder and import it into Postman. This collection contains all the endpoints available in TaskManager, along with example requests and responses.
+
 ## API Overview
 
 ### Authentication
@@ -65,7 +69,7 @@ This guide is designed to help product owners and developers get familiar with u
     {
       "username": "user@example.com",
       "email": "user@example.com",
-      "password": "password123",   
+      "password": "password123" 
     }
     ```
   - **Response**: Returns registered user.

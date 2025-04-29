@@ -54,9 +54,10 @@ $ mvn spring-boot:run
 ```
 
 ### 5. Accessing the API
-
+- Download the Postman collection from the `docs/` folder and import it into Postman. 
 - By default, the server runs on port `8443`.
-- Test the API using **Postman** or another API testing tool at [https://localhost:8443](https://localhost:8443).
+- Deployed server runs on [https://taskmanager-3vka.onrender.com](https://taskmanager-3vka.onrender.com) (if applicable).
+- Test the API using **Postman** or another API testing tool at [https://localhost:8443](https://localhost:8443) or the deployed URL.
 
 ## Troubleshooting
 
