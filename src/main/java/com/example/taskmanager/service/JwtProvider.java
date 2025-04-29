@@ -17,13 +17,14 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class JwtProvider {
 
-    private final Dotenv dotenv = Dotenv.load();
-    private final String jwtSecret = dotenv.get("JWT_SECRET");
+    private final String jwtSecret = Optional.ofNullable(System.getenv("JWT_SECRET"))
+            .orElseGet(() -> Dotenv.load().get("JWT_SECRET"));
     private static final long jwtExpirationMs = 900000; //15 minutes
 
     private PrivateKey privateKey;
