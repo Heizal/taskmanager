@@ -8,6 +8,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
@@ -32,8 +35,8 @@ public class JwtProvider {
 
     public JwtProvider() {
         try{
-            this.privateKey = loadPrivateKey("src/main/resources/private_key.pem");
-            this.publicKey = loadPublicKey("src/main/resources/public_key.pem");
+            this.privateKey = loadPrivateKey("private_key.pem");
+            this.publicKey = loadPublicKey("public_key.pem");
 
         } catch (Exception e){
             throw new RuntimeException("Could not load RSA keys",e);
@@ -42,8 +45,11 @@ public class JwtProvider {
     }
 
     //Load private key
-    private PrivateKey loadPrivateKey(String filePath) throws Exception {
-        String key = new String(Files.readAllBytes(Paths.get(filePath)))
+    private PrivateKey loadPrivateKey(String resourcePath) throws Exception {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
+        if (inputStream == null) throw new FileNotFoundException("Missing " + resourcePath);
+
+        String key = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8)
                 .replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
                 .replaceAll("\\s", "");
@@ -51,21 +57,22 @@ public class JwtProvider {
         byte[] decoded = Base64.getDecoder().decode(key);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        this.privateKey = keyFactory.generatePrivate(keySpec);
         return keyFactory.generatePrivate(keySpec);
     }
 
     //Load public key
-    private PublicKey loadPublicKey(String filePath) throws Exception {
-        String key = new String(Files.readAllBytes(Paths.get(filePath)))
-                .replaceAll("-----BEGIN PUBLIC KEY-----", "")
-                .replaceAll("-----END PUBLIC KEY-----", "")
+    private PublicKey loadPublicKey(String resourcePath) throws Exception {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
+        if (inputStream == null) throw new FileNotFoundException("Missing " + resourcePath);
+
+        String key = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8)
+                .replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "")
                 .replaceAll("\\s", "");
 
         byte[] decoded = Base64.getDecoder().decode(key);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        this.publicKey = keyFactory.generatePublic(keySpec);
         return keyFactory.generatePublic(keySpec);
     }
 
