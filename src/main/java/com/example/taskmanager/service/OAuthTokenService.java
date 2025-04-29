@@ -1,5 +1,6 @@
 package com.example.taskmanager.service;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -9,11 +10,14 @@ import java.util.Map;
 
 @Service
 public class OAuthTokenService {
-    // Load client secrets from environment variables
-    private final Dotenv dotenv = Dotenv.load();
-    private final String clientId = dotenv.get("GOOGLE_CLIENT_ID");
-    private final String clientSecret = dotenv.get("GOOGLE_CLIENT_SECRET");
-    private final String redirectUri = dotenv.get("GOOGLE_REDIRECT_URI");
+    @Value("${GOOGLE_CLIENT_ID}")
+    private String clientId;
+
+    @Value("${GOOGLE_CLIENT_SECRET}")
+    private String clientSecret;
+
+    @Value("${GOOGLE_REDIRECT_URI}")
+    private String redirectUri;
 
     private final RestTemplate restTemplate;
 
