@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: taskmanager-backend
+    env: java
+    buildCommand: "./gradlew build --no-daemon"
+    startCommand: "java -jar build/libs/taskmanager-0.0.1-SNAPSHOT.jar"
+    envVars:
+      - key: GOOGLE_CLIENT_ID
+        value: ""
+      - key: GOOGLE_CLIENT_SECRET
+        value: ""
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
