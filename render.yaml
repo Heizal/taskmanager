@@ -1,3 +1,5 @@
+databases:
+  - name: taskmanager-database
 services:
   - type: web
     name: taskmanager-backend
@@ -5,9 +7,21 @@ services:
     buildCommand: "./gradlew build --no-daemon"
     startCommand: "java -jar build/libs/taskmanager-0.0.1-SNAPSHOT.jar"
     envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
-      - key: SPRING_PROFILES_ACTIVE
-        value: prod
+
+      # Database environment variables
+      - key: DB_URL
+        value: jdbc:postgresql://dpg-d08c8ndiees7397slg0-a:5432/taskmanager_3y5x
+      - key: DB_USERNAME
+        value: pnaggind
+      - key: DB_PASSWORD
+        sync: false
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+
+
