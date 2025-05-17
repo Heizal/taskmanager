@@ -64,7 +64,7 @@ public class CommentControllerTest {
         comment.setContent("This is a comment");
 
         // Mocking CommentService to return a list of comments
-        Mockito.when(commentService.getCommentsByTaskId(taskId)).thenReturn(Collections.singletonList(comment));
+        Mockito.when(commentService.getCommentsByTaskId(taskId, Collections.emptyList())).thenReturn(Collections.singletonList(comment));
 
         mockMvc.perform(get("/api/tasks/" + taskId + "/comments")
                         .contentType(MediaType.APPLICATION_JSON))

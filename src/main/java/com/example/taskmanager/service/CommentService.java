@@ -46,9 +46,13 @@ public class CommentService {
     }
 
     //Fetch comments for a task
-
-    public List<Comment> getCommentsByTaskId(Long taskId) {
-        return commentRepository.findByTaskId(taskId);
+    public List<Comment> getCommentsByTaskId(Long taskId, List<Comment> allComments) {
+        return allComments.stream()
+                .filter(comment -> comment.getTask().getId().equals(taskId))
+                .toList();
     }
 
+    public List<Comment> getAllComments() {
+        return commentRepository.findAll();
+    }
 }
