@@ -16,7 +16,7 @@ public class OAuthTokenService {
     @Value("${GOOGLE_CLIENT_SECRET}")
     private String clientSecret;
 
-    @Value("${GOOGLE_REDIRECT_URI}")
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String redirectUri;
 
     private final RestTemplate restTemplate;

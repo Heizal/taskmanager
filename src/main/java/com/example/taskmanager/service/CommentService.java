@@ -45,13 +45,20 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    //Fetch comments for a task
+    //Fetch comments for a task by Id
     public List<Comment> getCommentsByTaskId(Long taskId, List<Comment> allComments) {
         return allComments.stream()
+                //.filter(new Predicate<Comment>() {
+                //    @Override
+                //    public boolean test(Comment comment) {
+                //        return comment.getTask().getId().equals(taskId);
+                //    }
+                //})
                 .filter(comment -> comment.getTask().getId().equals(taskId))
                 .toList();
     }
 
+    //Fetch all comments
     public List<Comment> getAllComments() {
         return commentRepository.findAll();
     }

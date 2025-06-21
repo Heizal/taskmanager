@@ -65,7 +65,8 @@ public class AuthController {
                 User user = userOptional.get();
 
                 String newAccessToken = jwtProvider.generateToken(user);
-
+                // Instead of writing Map<String, String> tokenResponse = new HashMap<String, String>()
+                //  we use the diamond operator
                 Map<String, String> tokenResponse = new HashMap<>();
                 tokenResponse.put("accessToken", newAccessToken);
                 tokenResponse.put("accessTokenValidity", String.valueOf(3600));
